@@ -78,17 +78,48 @@ def get_lines(graph_data, dates):
     the line to be displayed, and 'points' is a list of the points for the line
     in question.
     """
-    # TODO - make this the Real Thing
-    return [{'name':'Test Line 1', 'points':[float(d) / float(dates[0]) for d in dates]}]
+    lines = []
+    for platform, pdata in graph_data.iteritems():
+        for version, vdata in pdata.iteritems():
+            for netconfig, ndata in vdata.iteritems():
+                line = {'name':'%s version %s (%s)' % (platform, version,
+                                                       netconfig)}
+                points = []
+                for date in dates:
+                    try:
+                        info = ndata[0]
+                    except IndexError:
+                        # No more data for this combo, add empty values until
+                        # we cover all possible dates
+                        points.append(None)
+                        continue
+
+                    if date < info['date']:
+                        # No data for this combo on this date, so add an empty
+                        # value
+                        points.append(None)
+                        continue
+
+                    # Hey, we got real data!
+                    points.append(info['value'])
+
+                    # And we don't want to add this point again, so get rid
+                    # of it
+                    ndata.pop(0)
+
+                line['points'] = points
+                lines.append(line)
+
+    return lines
 
 @app.route('/graph', methods=['POST'])
 def graph():
     """URL endpoint for rendering a graph."""
     metadata, data = get_data()
 
-    versions = request.form.get('version', None)
-    platforms = request.form.get('platform', None)
-    netconfigs = request.form.get('netconfig', None)
+    versions = request.form.getlist('version')
+    platforms = request.form.getlist('platform')
+    netconfigs = request.form.getlist('netconfig')
     test = request.form.get('test', None)
     checked = {'versions':collections.defaultdict(lambda: False),
                'platforms':collections.defaultdict(lambda: False),
@@ -96,35 +127,28 @@ def graph():
                'test':collections.defaultdict(lambda: False)}
 
     # Herein lies error checking
-    if versions:
-        versions = versions.split(',')
-        for v in versions:
-            if v not in metadata['versions']:
-                return render_graph('Invalid Version: %s' % (v,), checked,
-                        error=True)
-            checked['versions'][v] = True
-
-    if platforms:
-        platforms = platforms.split(',')
-        for p in platforms:
-            if p not in metadata['platforms']:
-                return render_graph('Invalid Platform: %s' % (p,), checked,
-                        error=True)
-            checked['platforms'][p] = True
-
-    if netconfigs:
-        netconfigs = netconfigs.split(',')
-        for n in netconfigs:
-            if n not in metadata['netconfigs']:
-                return render_graph('Invalid Network Config: %s' % (n,),
-                        checked, error=True)
-            checked['netconfigs'][n] = True
-
-    if test:
-        if test not in metadata['tests']:
-            return render_graph('Invalid Test: %s' % (test,), checked,
+    for v in versions:
+        if v not in metadata['versions']:
+            return render_graph('Invalid Version: %s' % (v,), checked,
                     error=True)
-        checked['test'][test] = True
+        checked['versions'][v] = True
+
+    for p in platforms:
+        if p not in metadata['platforms']:
+            return render_graph('Invalid Platform: %s' % (p,), checked,
+                    error=True)
+        checked['platforms'][p] = True
+
+    for n in netconfigs:
+        if n not in metadata['netconfigs']:
+            return render_graph('Invalid Network Config: %s' % (n,), checked,
+                    error=True)
+        checked['netconfigs'][n] = True
+
+    if test not in metadata['tests']:
+        return render_graph('Invalid Test: %s' % (test,), checked,
+                error=True)
+    checked['test'][test] = True
 
     if not versions or not platforms or not netconfigs or not test:
         return render_graph('Missing Input', checked, error=True)
@@ -181,8 +205,8 @@ def graph():
     lines = get_lines(graph_data, dates)
 
     # Finally, we can have pygal do the graphing for us
-    chart = pygal.Line()
-    chart.title = 'Stone Ridge'
+    chart = pygal.Line(x_label_rotation=45)
+    chart.title = 'Stone Ridge - %s Test' % (test,)
     chart.x_labels = map(lambda x: str(x)[-4:], dates)
     for line in lines:
         chart.add(line['name'], line['points'])
