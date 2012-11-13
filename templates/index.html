@@ -7,50 +7,52 @@
     </head>
     <body>
         <form id="graphform" method="post" action="/graph">
-            <fieldset>
-                <legend>Version(s)</legend>
-                <ul>
-                    {% for version in versions %}
-                    <li>
-                        <input type="checkbox" name="version" value="{{ version }}" id="version{{ loop.index }}" {% if checked['versions'][version] %}checked{% endif %}>
-                        <label for="version{{ loop.index }}">Firefox {{ version }}</label>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </fieldset>
-            <fieldset>
-                <legend>Platform(s)</legend>
-                <ul>
-                    {% for platform in platforms %}
-                    <li>
-                        <input type="checkbox" name="platform" value="{{ platform }}" id="platform{{ loop.index }}" {% if checked['platforms'][platform] %}checked{% endif %}>
-                        <label for="platform{{ loop.index }}">{{ platform }}</label>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </fieldset>
-            <fieldset>
-                <legend>Network Config(s)</legend>
-                <ul>
-                    {% for nc in netconfigs %}
-                    <li>
-                        <input type="checkbox" name="netconfig" value="{{ nc }}" id="nc{{ loop.index }}" {% if checked['netconfigs'][nc] %}checked{% endif %}>
-                        <label for="nc{{ loop.index }}">{{ nc }}</label>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </fieldset>
-            <fieldset>
-                <legend>Test</legend>
-                <ul>
-                    {% for test in tests %}
-                    <li>
-                        <input type="radio" name="test" value="{{ test }}" id="test{{ loop.index }}" {% if checked['tests'][test] %}checked{% endif %}>
-                        <label for="test{{ loop.index }}">{{ test }}</label>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </fieldset>
+            <div id="box">
+                <fieldset>
+                    <legend>Version(s)</legend>
+                    <ul>
+                        {% for version in versions %}
+                        <li>
+                            <input type="checkbox" name="version" value="{{ version }}" id="version{{ loop.index }}" {% if checked['versions'][version] %}checked{% endif %}>
+                            <label for="version{{ loop.index }}">Firefox {{ version }}</label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+                <fieldset>
+                    <legend>Platform(s)</legend>
+                    <ul>
+                        {% for platform in platforms %}
+                        <li>
+                            <input type="checkbox" name="platform" value="{{ platform }}" id="platform{{ loop.index }}" {% if checked['platforms'][platform] %}checked{% endif %}>
+                            <label for="platform{{ loop.index }}">{{ platform }}</label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+                <fieldset>
+                    <legend>Network Config(s)</legend>
+                    <ul>
+                        {% for nc in netconfigs %}
+                        <li>
+                            <input type="checkbox" name="netconfig" value="{{ nc }}" id="nc{{ loop.index }}" {% if checked['netconfigs'][nc] %}checked{% endif %}>
+                            <label for="nc{{ loop.index }}">{{ nc }}</label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+                <fieldset>
+                    <legend>Test</legend>
+                    <ul>
+                        {% for test in tests %}
+                        <li>
+                            <input type="radio" name="test" value="{{ test }}" id="test{{ loop.index }}" {% if checked['tests'][test] %}checked{% endif %}>
+                            <label for="test{{ loop.index }}">{{ test }}</label>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </fieldset>
+            </div>
             <input type="submit" value="Graph" id="submit">
         </form>
         <div id="graph_container">
