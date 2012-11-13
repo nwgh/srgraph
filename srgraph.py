@@ -73,6 +73,14 @@ def get_dates(graph_data):
                 dates.update(set((x['date'] for x in ndata)))
     return sorted(list(dates))
 
+def get_lines(graph_data, dates):
+    """Return a list of {'name', 'points'} dicts, where 'name' is the name of
+    the line to be displayed, and 'points' is a list of the points for the line
+    in question.
+    """
+    # TODO - make this the Real Thing
+    return [{'name':'Test Line 1', 'points':[float(d) / float(dates[0]) for d in dates]}]
+
 @app.route('/graph', methods=['POST'])
 def graph():
     """URL endpoint for rendering a graph."""
@@ -139,6 +147,20 @@ def graph():
         date = get_date(d['test_build']['original_buildid'])
         value = d['results_aux']['totals'][0]
 
+        # Make sure this relates to the things we want to see
+        if platform not in platforms:
+            continue
+
+        if version not in versions:
+            continue
+
+        if netconfig not in netconfigs:
+            continue
+
+        if d['testrun']['suite'] != test:
+            continue
+
+        # Make sure we only have one data point per day
         try:
             latest = graph_data[platform][version][netconfig][-1]['date']
         except IndexError:
