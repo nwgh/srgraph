@@ -190,7 +190,7 @@ def graph():
         except IndexError:
             latest = -1
 
-        if data <= latest:
+        if date <= latest:
             # Only want one date per platform/version/netconfig combo, so
             # let's skip this one
             continue
