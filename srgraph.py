@@ -205,7 +205,8 @@ def graph():
     lines = get_lines(graph_data, dates)
 
     # Finally, we can have pygal do the graphing for us
-    chart = pygal.Line(x_label_rotation=45)
+    chart = pygal.Line(x_label_rotation=45,
+            style=pygal.style.DarkSolarizedStyle)
     chart.title = 'Stone Ridge - %s Test' % (test,)
     chart.x_labels = map(lambda x: str(x)[-4:], dates)
     for line in lines:
