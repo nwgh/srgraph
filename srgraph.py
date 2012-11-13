@@ -1,4 +1,5 @@
 import base64
+import collections
 import glob
 import json
 import os
@@ -50,6 +51,8 @@ def render_graph(data, checked, error=False):
     else:
         rendered_template = render_template('graph.html', graph_uri=data)
 
+    xreqwith = request.headers.get('X-Requested-With', None)
+    ajax = True if xreqwith is not None else False
     if not ajax:
         return index(checked=checked, graph_data=rendered_template)
 
@@ -133,11 +136,11 @@ def graph():
         platform = d['test_machine']['os']
         version = d['test_build']['version']
         netconfig = d['test_build']['branch']
-        date = get_data(d['test_build']['original_buildid'])
+        date = get_date(d['test_build']['original_buildid'])
         value = d['results_aux']['totals'][0]
 
         try:
-            latest = results[platform][version][netconfig][-1]['date']
+            latest = graph_data[platform][version][netconfig][-1]['date']
         except IndexError:
             latest = -1
 
@@ -176,10 +179,11 @@ def index(checked=None, graph_data=None):
     if checked is None:
         checked = collections.defaultdict(lambda: collections.defaultdict(lambda: False))
     metadata, _ = get_data()
-    return render_template('index.html', versions=subdivisions['versions'],
-            platforms=subdivisions['platforms'], tests=subdivision['tests'],
-            checked=checked, graph_data=graph_data)
+    return render_template('index.html', versions=metadata['versions'],
+            platforms=metadata['platforms'], tests=metadata['tests'],
+            netconfigs=metadata['netconfigs'], checked=checked,
+            graph_data=graph_data)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=True)
