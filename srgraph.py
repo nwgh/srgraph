@@ -25,6 +25,9 @@ def get_data():
     runs = []
 
     files = glob.glob('data/*.json')
+    files.sort() # Heroku doesn't glob the way localhost does, we have to sort
+                 # here to make sure our data is in the order we want it in,
+                 # otherwise we end up with junk graphs.
     for filename in files:
         with file(filename) as f:
             data = json.load(f)
