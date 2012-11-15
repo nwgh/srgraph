@@ -56,3 +56,7 @@ form>input {
     margin-top: 10px;
     margin-left: 49%;
 }
+
+embed {
+    max-height: 800px;
+}
