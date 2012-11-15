@@ -34,10 +34,22 @@ form {
 
 div#box {
     width: 100%;
+
     display: -moz-box;
+    display: -webkit-box;
+    display: -webkit-flex;
+
     -moz-box-orient: horizontal;
+    -webkit-box-orient: horizontal
+    -webkit-flex-direction: row;
+
     -moz-box-pack: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+
     -moz-box-flex: 1;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
 }
 
 form>input {
