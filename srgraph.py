@@ -32,6 +32,10 @@ def get_data():
         with file(filename) as f:
             data = json.load(f)
 
+        if isinstance(data, int):
+            # Sometimes, random json junk slips through. Let's filter that out
+            continue
+
         runs.append(data)
         platforms.add(data['test_machine']['os'])
         versions.add(data['test_build']['version'])
